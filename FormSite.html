@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DialoGPTチャット</title>
+</head>
+<body>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex; 
+            text-align: center; /*全てを中央揃え*/
+            justify-content: center;/*body内のコンテンツを垂直方向に中央揃え*/
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .title{
+            font-family: "明朝体";
+            font-weight: bold;
+            margin-bottom: 20px;
+            font-size: 50px;
+        }
+        .container {
+            width: 40%; /* 外枠の幅を画面全体の40%に設定 */
+            min-width: 300px; /*最小幅を設定*/
+            margin: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
+            box-shadow: 0 4px px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .input-container {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            flex: 3; /* 入力欄をより広く取る */
+            padding: 10px;
+            margin-right: 10px; /* ボタンとの間隔を調整 */
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            flex: 1; /* ボタンの幅を適切に設定 */
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            white-space: nowrap; /* ボタンのテキストが折り返さないようにする */
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .messages {
+            margin-top: 20px;
+        }
+        .message {
+            background-color: #f0f0f0;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+    </style>
+<div class="title">Dialo-GPT</div>
+<div class="container">
+    <div class="input-container">
+        <input type="text" id="messageInput" placeholder="メッセージを入力してください">
+        <button onclick="sendMessage()">送信</button>
+    </div>
+    <div class="messages" id="messageContainer"></div>
+</div>
+
+<script>
+function sendMessage() {
+    var messageInput = document.getElementById("messageInput");
+    var message = messageInput.value.trim();
+    
+    if (message !== "") {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "http://127.0.0.1:5004/generate_response?q=" + encodeURIComponent(message), true);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                var response = JSON.parse(xhr.responseText);
+                displayResponse(response.response);
+            }
+        };
+        xhr.send();
+        
+        // メッセージ入力欄をクリアする
+        messageInput.value = "";
+    } else {
+        alert("メッセージを入力してください");
+    }
+}
+
+function displayResponse(response) {
+    var messageContainer = document.getElementById("messageContainer");
+    var messageElement = document.createElement("div");
+    messageElement.classList.add("message");
+    messageElement.innerHTML = response; // HTMLとして解釈・表示
+    messageContainer.appendChild(messageElement);
+}
+</script>
+
+</body>
+</html>
